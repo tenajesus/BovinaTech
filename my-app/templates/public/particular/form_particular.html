@@ -1,0 +1,225 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+Registrar Salida particular
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form
+        class="form-horizontal mx-auto"
+        method="POST"
+        action="/form-registrar-particular"
+        autocomplete="off"
+        enctype="multipart/form-data">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <label for="fecha_solicitud" class="form-label">
+                Fecha de Solicitud
+              </label>
+              <input
+                type="date"
+                name="fecha_solicitud"
+                class="form-control"
+                required />
+            </div>
+            <div class="col-md-4">
+              <label for="medio_solicitud" class="form-label">
+                Medio de Solicitud
+              </label>
+              <select
+                class="form-select"
+                name="medio_solicitud"
+                aria-label="Default select example">
+                <option selected>Seleccione</option>
+                <option value="Oficio de Comision">Oficio de Comisión</option>
+                <option value="Memorándum">Memorándum</option>
+                <option value="Verbal">Verbal</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="num_documento" class="form-label">
+                Número de Documento
+              </label>
+              <input
+                type="number"
+                name="num_documento"
+                class="form-control"
+                required />
+            </div>
+          </div>
+          <div class="row justify-content-center mb-2">
+            <div class="col-md-12">
+              <div class="text-center mt-5 mb-3 alert alert-dark" role="alert">
+                Datos de la Comisión
+              </div>
+              <hr />
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="fecha_inicial" class="form-label">
+                Fecha Inicial
+              </label>
+              <input 
+              type="date"
+              class="form-control"
+              name="fecha_inicial"
+              required>
+            </div>
+            <div class="col-md-6">
+              <label for="fecha_final" class="form-label">
+                Fecha Inicial
+              </label>
+              <input 
+              type="date"
+              class="form-control"
+              name="fecha_final"
+              required>
+            </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-12">
+              <label for="descripcion_com" class="form-label">
+                Descripción de la Comisión
+              </label>
+              <textarea
+                class="form-control"
+                rows="4"
+                name="descripcion_com"
+                required>
+                </textarea>
+            </div>
+            
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="lugar_comision" class="form-label">
+                Lugar de la Comisión
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="lugar_comision"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="importe_asignado" class="form-label">
+                Importe asignado
+              </label>
+              <input
+                class="form-control"
+                type="number"
+                name="importe_asignado"
+                id="importe_asignado"
+                required />
+            </div>
+            
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-5">
+              <label for="area" class="form-label">
+                Area de Adscripción
+              </label>
+              <select
+                class="form-select"
+                name="area"
+                aria-label="Default select example">
+                <option selected>Seleccione</option>
+                <option value="Secretaría Académica">Secretaría Académica</option>
+                <option value="Dirección de Administración y Finanzas">Dirección de Administración y Finanzas</option>
+                <option value="Contraloría Interna">Contraloría Interna</option>
+                <option value="Dirección de Vinculación">Dirección de Vinculación</option>
+                <option value="Subdirección Jurídica">Subdirección Jurídica</option>
+                <option value="Jefatura de Planeación y Sistema de Gestión de Calidad, ambiental y Sustentabilidad">Jefatura de Planeación y Sistema de Gestión de Calidad, ambiental y Sustentabilidad</option>
+                <option value="Subdirección de Recursos Humanos">Subdirección de Recursos Humanos</option>
+                <option value="Jefatura de Recursos Materiales">Jefatura de Recursos Materiales</option>
+                <option value="Jefatura de Recursos Humanos">Jefatura de Recursos Humanos</option>
+                <option value="Jefatura de Activo Fijo e Inventarios">Jefatura de Activo Fijo e Inventarios</option>
+                <option value="Jefatura de Servicios Generales">Jefatura de Servicios Generales</option>
+                <option value="Jefatura de Soporte Técnico">Jefatura de Soporte Técnico</option>
+                <option value="Dirección de DN, ADM">Dirección de DN, ADM</option>
+                <option value="Dirección de MIN, ASP">Dirección de MIN, ASP</option>
+                <option value="Dirección de TF">Dirección de TF</option>
+                <option value="Dirección de TI, MT, ER">Dirección de TI, MT, ER</option>
+                <option value="Dirección de MI, PI">Dirección de MI, PI</option>
+                <option value="Subdirección de Servicios Escolares">Subdirección de Servicios Escolares</option>
+                <option value="Jefatura de la Unidad Académica de Pinos">Jefatura de la Unidad Académica de Pinos</option>
+                <option value="Jefatura de Centro de Idiomas, Movilidad y Emprendimiento">Jefatura de Centro de Idiomas, Movilidad y Emprendimiento</option>
+                <option value="Jefatura de Capacitación y Actualización Docente">Jefatura de Capacitación y Actualización Docente</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <label for="comisionado" class="form-label">
+                Comisionado
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="comisionado"
+                id="comisionado"
+                required />
+            </div>
+            <div class="col-md-2">
+              <label for="folioticket" class="form-label">
+                Folio Ticket
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="folioticket"
+                id="folioticket"
+                required />
+            </div>
+          </div>
+          <!-- Carga del archivo -->
+           <div class="col-md-6">
+              <label for="" class="form-label">
+                Cargar imagen del Documento
+              </label>
+            </div>
+          <div class="row mt-2">
+            <div class="avatar-upload">
+                <div>
+                  <input
+                    type="file"
+                    name="foto_empleado"
+                    id="imageUpload"
+                    accept=".png, .jpg, .jpeg" />
+                </div>
+                <!-- <div class="avatar-preview">
+                  <div class="avatar-preview">
+                    {% set url_avatar= url_for('static', filename
+                    ='assets/img/avatar.png') %}
+                    <div
+                      id="imagePreview"
+                      style="background-image: url('{{ url_avatar }}')"></div>
+                  </div>
+                </div> -->
+              </div>
+          </div>
+
+          <div class="mb-3 mt-4 text-center">
+            <button type="submit" class="btn btn-primary">
+              Guardar registro
+              <i class="bi bi-database-add"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block customJS %}http://localhost:5600/lista-de-usuarios
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% for oficial in dataBusquedaof %}
+<tr id="empleado_{{ oficial.id }}">
+              <td>{{ loop.index }}</td>
+              <td>{{ oficial.comisionado }}</td>
+              <td>{{ oficial.fecha_solicitud }}</td>
+              <td>{{ oficial.medio_solicitud }}</td>
+              <td>{{ oficial.num_documento }}</td>
+              <td>${{ oficial.importe }}</td>
+              <td>
+    <a
+      href="/detalles-oficial/{{ oficial.id }}"
+      title="Ver envio"
+      type="button"
+      class="btn btn-info btn-sm"
+      data-bs-toggle="tooltip"
+      data-bs-offset="0,4"
+      data-bs-placement="top"
+      data-bs-html="true"
+      title="<span>Ver detalles</span>">
+      <i class="bi bi-eye"></i>
+      Ver detalles
+    </a>
+  </td>
+</tr>s
+
+{% endfor %}

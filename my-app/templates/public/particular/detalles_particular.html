@@ -1,0 +1,240 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+Lista de Salidas Particulares
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<!---->
+{% if (detalle_empleado|length) %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h4 class="text-center mt-5 mb-3">
+        <a href="/lista-particular">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+      </h4>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <div class="card-body">
+        <div class="alert alert-dark" role="alert">
+    <center>Datos de la Comisión</center>
+  </div>
+        <div class="row">
+          <div class="col-md-4">
+            <label for="fecha_solicitud" class="form-label">
+              Fecha de Solicitud
+            </label>
+            <br />
+            {{ detalle_empleado.fecha_solicitud}}
+          </div>
+          <div class="col-md-4">
+            <label for="medio_solicitud" class="form-label">
+              Medio de solicitud
+            </label>
+            <br />
+            {{ detalle_empleado.medio_solicitud}}
+          </div>
+          <div class="col-md-4">
+            <label for="documento" class="form-label">
+              Documento
+            </label>
+            <br />
+            {{ detalle_empleado.num_documento}}
+          </div>
+        </div>
+<hr />
+        <div class="row mt-2">
+         <div class="col-md-4">
+            <label for="fecha_inicial" class="form-label">
+              Fecha Inicial:
+            </label>
+            <br />
+            {{ detalle_empleado.fecha_inicial}}
+          </div>
+        
+        <div class="col-md-4">
+            <label for="fecha_inicial" class="form-label">
+              Fecha Final:
+            </label>
+            <br />
+            {{ detalle_empleado.fecha_final}}
+        </div>
+        <div class="col-md-4">
+            <label for="comisionado" class="form-label">
+              Comisionado:
+            </label>
+            <br />
+            {{ detalle_empleado.comisionado}}
+        </div>
+        </div>
+<hr />
+<div class="row mt-2">
+         <div class="col-md-4">
+            <label for="Licencia" class="form-label">
+              Licencia:
+            </label>
+            <br />
+            {{ detalle_empleado.licencia}}
+          </div>
+        
+        <div class="col-md-4">
+            <label for="area" class="form-label">
+              Area:
+            </label>
+            <br />
+            {{ detalle_empleado.area}}
+        </div>
+        <div class="col-md-4">
+            <label for="descripcion" class="form-label">
+              Descripción de la Comisión:
+            </label>
+            <br />
+            {{ detalle_empleado.descripcion}}
+        </div>
+        </div>
+<hr />
+<div class="row mt-2">
+         <div class="col-md-4">
+            <label for="lugar" class="form-label">
+              Lugar de la comisión:
+            </label>
+            <br />
+            {{ detalle_empleado.lugar}}
+          </div>
+
+        </div>
+<hr />
+  <div class="alert alert-danger" role="alert">
+    <center>Datos del Vehículo</center>
+  </div>
+<div class="row mt-2">
+         <div class="col-md-4">
+            <label for="km_inicial" class="form-label">
+              Kilometraje Inicial:
+            </label>
+            <br />
+            {{ detalle_empleado.km_inicial}}
+          </div>
+        
+        <div class="col-md-4">
+            <label for="km_final" class="form-label">
+              Kilometraje Final:
+            </label>
+            <br />
+            {{ detalle_empleado.km_final}}
+        </div>
+        <div class="col-md-4">
+            <label for="total_recorrido" class="form-label">
+              Total Recorrido:
+            </label>
+            <br />
+            {{ detalle_empleado.total_recorrido}}
+        </div>
+        </div>
+<hr />
+<div class="row mt-2">
+         <div class="col-md-4">
+            <label for="fecha_carga_com" class="form-label">
+              Fecha de Carga:
+            </label>
+            <br />
+            {{ detalle_empleado.fecha_carga_com}}
+          </div>
+        
+        <div class="col-md-4">
+            <label for="importe" class="form-label">
+              Importe:
+            </label>
+            <br />
+            ${{ detalle_empleado.importe}}
+        </div>
+        <div class="col-md-4">
+            <label for="folio_ticket" class="form-label">
+              Folio Ticket:
+            </label>
+            <br />
+            {{ detalle_empleado.folio_ticket}}
+        </div>
+        </div>
+<hr />
+<div class="row mt-2">
+         <div class="col-md-4">
+            <label for="litros_ticket" class="form-label">
+              Litros Ticket:
+            </label>
+            <br />
+            {{ detalle_empleado.litros_ticket}}
+          </div>
+        
+        <div class="col-md-4">
+            <label for="rendimiento" class="form-label">
+              Rendimiento Promedio:
+            </label>
+            <br />
+            {{ detalle_empleado.rendimiento_promedio}}
+        </div>
+        <div class="col-md-4">
+            <label for="precio_compra_comb" class="form-label">
+              Precio de Compra:
+            </label>
+            <br />
+            {{ detalle_empleado.precio_compra_comb}}
+        </div>
+  </div>
+<hr />
+<div class="row mt-2">
+         <div class="col-md-4">
+            <label for="total_consumo" class="form-label">
+              Total Consumido:
+            </label>
+            <br />
+            {{ detalle_empleado.total_consumo}}
+          </div>
+        
+        <div class="col-md-4">
+            <label for="num_eco" class="form-label">
+              Vehiculo:
+            </label>
+            <br />
+            {{ detalle_empleado.num_eco}}
+        </div>
+        <div class="col-md-4">
+            <label for="observaciones" class="form-label">
+              Observaciones:
+            </label>
+            <br />
+            {{ detalle_empleado.observaciones}}
+        </div>
+  </div>
+          <hr>
+          <div class="col-md-12">
+            <label for="" class="form-label"> Evidencia </label>
+            <br />
+            <img
+              style="width: 1024px"
+              src="/static/fotos_empleados/{{ detalle_empleado.foto_empleado }}"
+              alt="imagen-empleado" />
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<h2 class="text-center">
+  No existe el registro
+  <hr />
+</h2>
+{% endif %} {% endblock %}

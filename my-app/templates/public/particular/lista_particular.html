@@ -1,0 +1,76 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+Lista de salidas Particulares
+{% block body %}
+
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12 mb-4">
+      <h3 class="text-center mt-5 mb-3">Salidas Particulares</h3>
+      <hr />
+    </div>
+
+    <div class="row justify-content-end">
+      <div class="col-md-6 mt-4 py-2">
+        <input
+          type="search"
+          id="search"
+          class="form-control border-0 shadow-none"
+          placeholder="Buscar salida..."
+          onkeyup="buscadorTablePart('comisiones_particular')" />
+      </div>
+    </div>
+
+    <div class="row justify-content-center mb-2">
+      <div class="table-responsive text-nowrap table-hover">
+        <table
+          table-hover
+          id="comisiones_particular"
+          class="table table-striped table-bordered"
+          cellspacing="0"
+          width="100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Comisionado</th>
+              <th>Fecha de Solicitud</th>
+              <th>Medio de Solicitud</th>
+              <th>Numero de Documento</th>
+              <th>Importe</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for oficial in oficiales %}
+            <tr id="empleado_{{ oficial.id }}">
+              <td>{{ loop.index }}</td>
+              <td>{{ oficial.comisionado }}</td>
+              <td>{{ oficial.fecha_solicitud }}</td>
+              <td>{{ oficial.medio_solicitud }}</td>
+              <td>{{ oficial.num_documento }}</td>
+              <td>${{ oficial.importe_asignado }}</td>
+              <td width="10px">
+                <a
+                  href="/detalles-particular/{{ oficial.id }}"
+                  title="Ver envio"
+                  type="button"
+                  class="btn btn-info btn-sm"
+                  data-bs-toggle="tooltip"
+                  data-bs-offset="0,4"
+                  data-bs-placement="top"
+                  data-bs-html="true"
+                  title="<span>Ver detalles</span>">
+                  <i class="bi bi-eye"></i>
+                  Ver detalles
+                </a>  
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
