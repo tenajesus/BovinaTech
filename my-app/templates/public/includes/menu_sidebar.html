@@ -6,8 +6,8 @@
           <br>
         <img
             src="{{ url_for('static', filename =
-            'assets/img/utzac.png') }}"
-            width="60"          
+            'assets/img/aga.png') }}"
+            width="90"          
             alt="Logo"/>
       </div>
       </a>
@@ -23,69 +23,69 @@
     <li
       class="menu-item {% if request.path == '/registrar-particular' %} active {% endif %}">
       <a href="{{ url_for('viewFormParticular') }}" class="menu-link">
-        <i class="menu-icon bi bi-car-front-fill"></i>
-        <div data-i18n="Basic">Salida Particular</div>
+        <i class="menu-icon bi bi-speedometer" style="color: rgb(237, 182, 100);"></i>
+        <div data-i18n="Basic">Dashboard</div>
       </a>
     </li>
     <li
       class="menu-item {% if request.path == '/registrar-salida' %} active {% endif %}">
       <a href="{{ url_for('viewFormOficial') }}" class="menu-link">
-        <i class="menu-icon bi bi-car-front-fill"></i>
-        <div data-i18n="Basic">Salida Oficial</div>
+        <i class="menu-icon bi bi-piggy-bank" style="color: rgb(184, 22, 116);"></i>
+        <div data-i18n="Basic">Animales</div>
       </a>
     </li>
     <li
       class="menu-item {% if request.path == '/registrar-empleado' %} active {% endif %}">
       <a href="{{ url_for('viewFormEmpleado') }}" class="menu-link">
-        <i class="menu-icon bi bi-person-add"></i>
-        <div data-i18n="Basic">Registrar Personal</div>
+        <i class="menu-icon bi bi-pin-map" style="color: cornflowerblue;"></i>
+        <div data-i18n="Basic">Lotes</div>
       </a>
     </li>
     <li
       class="menu-item {% if request.path == '/lista-de-empleados' %} active{% endif %}">
       <a href="/lista-de-empleados" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Boxicons">Lista de Empleados</div>
+        <i class="menu-icon bi bi-cup-hot" style="color: rgb(199, 44, 69);"></i>
+        <div data-i18n="Boxicons">Alimentación</div>
       </a>
     </li>
     <li
       class="menu-item {% if request.path == '/lista-particular' %} active{% endif %}">
       <a href="/lista-particular" class="menu-link">
-        <i class="menu-icon bi bi-list-check"></i>
-        <div data-i18n="Boxicons">Lista de Salidas (Part.)</div>
+        <i class="menu-icon bi bi-capsule-pill" style="color: rgb(10, 3, 107);"></i>
+        <div data-i18n="Boxicons">Salud y Tratamientos</div>
       </a>
     </li>
     <li
       class="menu-item {% if request.path == '/lista-oficial' %} active{% endif %}">
       <a href="/lista-oficial" class="menu-link">
-        <i class="menu-icon bi bi-list-check"></i>
-        <div data-i18n="Boxicons">Lista de Salidas (Oficial)</div>
+        <i class="menu-icon bi bi-list-check" style="color: rgb(184, 206, 90);"></i>
+        <div data-i18n="Boxicons">Reportes</div>
       </a>
     </li>
-    <li
+    <!-- <li
       class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
       <a href="/descargar-informe-empleados" class="menu-link">
         <i class="menu-icon bi bi-file-earmark-spreadsheet-fill"></i>
         <div data-i18n="Tables">Reportes</div>
       </a>
-    </li>
+    </li> -->
     <li
       class="menu-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
       <a href="/lista-de-usuarios" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
+        <i class="menu-icon bi bi-person-lines-fill" style="color: rgb(30, 161, 170);"></i>
         <div data-i18n="Tables">Lista de Usuarios</div>
       </a>
     </li>
     <li
       class="menu-item {% if request.path == '/mi-perfil' %} active {% endif %}">
       <a href="/mi-perfil" class="menu-link">
-        <i class="menu-icon bi bi-person-fill-gear"></i>
-        <div data-i18n="Tables">Mi Perfil</div>
+        <i class="menu-icon bi bi-gear" style="color: rgb(29, 82, 53);"></i>
+        <div data-i18n="Tables">Configuración</div>
       </a>
     </li>
     <li class="menu-item">
       <a href="{{ url_for('cerraSesion') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+        <i class="menu-icon tf-icons bx bx-lock-open-alt" style="color: rgb(218, 10, 10);"></i>
         <div data-i18n="Tables">Salir</div>
       </a>
     </li>
