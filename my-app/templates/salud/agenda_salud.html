@@ -75,7 +75,8 @@ Agenda de Salud
                             </thead>
                             <tbody id="tbody-vacunacion">
                                 {% for registro in registros %}
-                                {% if registro.tipo_evento == 'vacunacion' %}
+                                {% if registro.tipo_evento|lower == 'vacunación' or registro.tipo_evento|lower ==
+                                'vacunacion' %}
                                 <tr>
                                     <td>#{{ registro.arete }}</td>
                                     <td>{{ registro.nombre_item }}</td>
@@ -106,68 +107,78 @@ Agenda de Salud
                 <!-- Tab de Tratamientos -->
                 <div class="tab-pane fade" id="tratamientos" role="tabpanel" aria-labelledby="tratamientos-tab">
 
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Tratamientos Activos</h5>
+                        <button class="btn btn-dark btn-sm">
+                            <i class="bi bi-plus-circle"></i> Nuevo tratamiento
+                        </button>
+                    </div>
+
                     <!-- Cards de Estadísticas -->
                     <div class="row mb-4">
                         <div class="col-md-4">
-                            <div class="card bg-danger-subtle border-0">
+                            <div class="card border-0" style="background-color: #f8f9fa;">
                                 <div class="card-body">
-                                    <h6 class="text-danger">Vencidas</h6>
-                                    <h2 class="mb-0" id="vencidas-tratamiento">0</h2>
+                                    <h6 class="text-muted">Tratamientos activos</h6>
+                                    <h2 class="mb-0" id="tratamientos-activos">0</h2>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card bg-warning-subtle border-0">
+                            <div class="card border-0" style="background-color: #f8f9fa;">
                                 <div class="card-body">
-                                    <h6 class="text-warning">Próximas (esta semana)</h6>
-                                    <h2 class="mb-0" id="proximas-tratamiento">0</h2>
+                                    <h6 class="text-muted">Animales en tratamiento</h6>
+                                    <h2 class="mb-0" id="animales-tratamiento">0</h2>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card bg-primary-subtle border-0">
+                            <div class="card border-0" style="background-color: #f8f9fa;">
                                 <div class="card-body">
-                                    <h6 class="text-primary">Pendientes</h6>
-                                    <h2 class="mb-0" id="pendientes-tratamiento">0</h2>
+                                    <h6 class="text-muted">Finalizados esta semana</h6>
+                                    <h2 class="mb-0" id="finalizados-semana">0</h2>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tabla de Tratamientos -->
-                    <div class="table-responsive text-nowrap table-hover">
-                        <table class="table table-striped table-bordered" id="tabla-tratamientos">
-                            <thead>
+                    <div class="table-responsive text-nowrap">
+                        <table class="table table-hover" id="tabla-tratamientos">
+                            <thead style="background-color: #f8f9fa;">
                                 <tr>
                                     <th>Animal</th>
-                                    <th>Vacuna</th>
-                                    <th>Fecha programada</th>
-                                    <th>Responsable</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Medicamento</th>
+                                    <th>Dosis</th>
+                                    <th>Duración</th>
+                                    <th>Observaciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-tratamientos">
                                 {% for registro in registros %}
-                                {% if registro.tipo_evento == 'tratamiento' %}
+                                {% if registro.tipo_evento|lower == 'tratamiento' or registro.tipo_evento|lower ==
+                                'desparasitación' or registro.tipo_evento|lower == 'desparasitacion' %}
                                 <tr>
-                                    <td>#{{ registro.arete }}</td>
+                                    <td><strong>#{{ registro.arete }}</strong></td>
+                                    <td>{{ registro.tipo_evento }}</td>
                                     <td>{{ registro.nombre_item }}</td>
-                                    <td>{{ registro.fecha_programada }}</td>
-                                    <td>{{ registro.responsable }}</td>
+                                    <td>{{ registro.dosis if registro.dosis else '-' }}</td>
                                     <td>
-                                        {% if registro.estado == 'Vencida' %}
-                                        <span class="badge bg-danger">Vencida</span>
-                                        {% elif registro.estado == 'Próxima' %}
-                                        <span class="badge bg-warning">Próxima</span>
+                                        {% if registro.dias_retiro %}
+                                        {{ registro.dias_retiro }} días
                                         {% else %}
-                                        <span class="badge bg-primary">Pendiente</span>
+                                        -
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <button class="btn btn-dark btn-sm">
-                                            Registrar aplicación
-                                        </button>
+                                        <small class="text-muted">
+                                            {% if registro.ingrediente_activo %}
+                                            {{ registro.ingrediente_activo }}
+                                            {% else %}
+                                            Responsable: {{ registro.responsable }}
+                                            {% endif %}
+                                        </small>
                                     </td>
                                 </tr>
                                 {% endif %}
