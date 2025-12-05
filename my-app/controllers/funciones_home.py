@@ -552,3 +552,38 @@ def eliminarUsuario(id):
     except Exception as e:
         print(f"Error en eliminarUsuario : {e}")
         return []
+
+
+# Obtener registros sanitarios (vacunación y tratamientos)
+def sql_lista_registros_sanitarios():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT 
+                        rs.id_registro,
+                        rs.fecha,
+                        rs.tipo_evento,
+                        rs.responsable,
+                        rs.dosis,
+                        a.arete,
+                        i.nombre AS nombre_item,
+                        i.ingrediente_activo,
+                        i.dias_retiro,
+                        DATE_FORMAT(rs.fecha, '%d/%m/%Y') AS fecha_programada,
+                        CASE
+                            WHEN rs.fecha < CURDATE() THEN 'Vencida'
+                            WHEN rs.fecha BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) THEN 'Próxima'
+                            ELSE 'Pendiente'
+                        END AS estado
+                    FROM registro_sanitario AS rs
+                    INNER JOIN animal AS a ON rs.id_animal = a.id_animal
+                    INNER JOIN item AS i ON rs.id_item = i.id_item
+                    ORDER BY rs.fecha DESC
+                    """)
+                cursor.execute(querySQL,)
+                registrosBD = cursor.fetchall()
+        return registrosBD
+    except Exception as e:
+        print(f"Error en la función sql_lista_registros_sanitarios: {e}")
+        return None

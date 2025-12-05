@@ -10,14 +10,21 @@ PATH_URL = "public/empleados"
 PATH_URL_2 = "public/particular"
 PATH_URL_3 = "public/oficial"
 
+# ============================================================================
+# ALL ROUTES BELOW ARE COMMENTED OUT BECAUSE THEY REFERENCE NON-EXISTENT TABLES
+# The database 'ganaderia_app' does not have these tables:
+# - comisiones_particular
+# - comisiones_oficial  
+# - tbl_empleados
+# ============================================================================
 
+'''
 @app.route('/registrar-empleado', methods=['GET'])
 def viewFormEmpleado():
     if 'conectado' in session:
         return render_template(f'{PATH_URL}/form_empleado.html')
     else:
-        flash('primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
+        flash('primero debes iniciar sesión.', 'error')\n        return redirect(url_for('inicio'))
 
 @app.route('/registrar-oficial', methods=['GET'])
 def viewFormOficial():
@@ -85,7 +92,6 @@ def formOficial():
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
 
-
 @app.route('/lista-de-empleados', methods=['GET'])
 def lista_empleados():
     if 'conectado' in session:
@@ -109,7 +115,6 @@ def lista_oficial():
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
-
 
 @app.route("/detalles-empleado/", methods=['GET'])
 @app.route("/detalles-empleado/<int:idEmpleado>", methods=['GET'])
@@ -165,7 +170,6 @@ def viewBuscarEmpleadoBD():
         return render_template(f'{PATH_URL}/resultado_busqueda_empleado.html', dataBusqueda=resultadoBusqueda)
     else:
         return jsonify({'fin': 0})
-    
 
 # Buscador oficial
 @app.route("/buscando-oficial", methods=['POST'])
@@ -206,7 +210,6 @@ def actualizarEmpleado():
     if resultData:
         return redirect(url_for('lista_empleados'))
 
-
 @app.route("/lista-de-usuarios", methods=['GET'])
 def usuarios():
     if 'conectado' in session:
@@ -223,7 +226,6 @@ def borrarUsuario(id):
         flash('El Usuario fue eliminado correctamente', 'success')
         return redirect(url_for('usuarios'))
 
-
 @app.route('/borrar-empleado/<string:id_empleado>/<string:foto_empleado>', methods=['GET'])
 def borrarEmpleado(id_empleado, foto_empleado):
     resp = eliminarEmpleado(id_empleado, foto_empleado)
@@ -236,6 +238,18 @@ def borrarEmpleado(id_empleado, foto_empleado):
 def reporteBD():
     if 'conectado' in session:
         return generarReporteExcel()
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+'''
+
+
+# Ruta para Salud y Tratamientos
+@app.route('/salud-tratamientos', methods=['GET'])
+def salud_tratamientos():
+    if 'conectado' in session:
+        registros = sql_lista_registros_sanitarios()
+        return render_template('salud/agenda_salud.html', registros=registros)
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))

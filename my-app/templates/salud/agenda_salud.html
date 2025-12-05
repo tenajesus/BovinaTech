@@ -1,0 +1,227 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+Agenda de Salud
+{% block body %}
+
+<div class="card" style="border-radius: 0px !important">
+    <div class="row justify-content-center mb-2">
+        <div class="col-md-12 mb-4">
+            <h3 class="text-center mt-5 mb-3">Agenda de Salud</h3>
+            <hr />
+        </div>
+
+        <!-- Tabs de Vacunación y Tratamientos -->
+        <div class="col-md-12">
+            <ul class="nav nav-tabs mb-4" id="saludTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="vacunacion-tab" data-bs-toggle="tab"
+                        data-bs-target="#vacunacion" type="button" role="tab" aria-controls="vacunacion"
+                        aria-selected="true">
+                        <i class="bi bi-shield-fill-plus"></i> Vacunación
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tratamientos-tab" data-bs-toggle="tab" data-bs-target="#tratamientos"
+                        type="button" role="tab" aria-controls="tratamientos" aria-selected="false">
+                        <i class="bi bi-capsule"></i> Tratamientos
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="saludTabsContent">
+                <!-- Tab de Vacunación -->
+                <div class="tab-pane fade show active" id="vacunacion" role="tabpanel" aria-labelledby="vacunacion-tab">
+
+                    <!-- Cards de Estadísticas -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-danger-subtle border-0">
+                                <div class="card-body">
+                                    <h6 class="text-danger">Vencidas</h6>
+                                    <h2 class="mb-0" id="vencidas-vacuna">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-warning-subtle border-0">
+                                <div class="card-body">
+                                    <h6 class="text-warning">Próximas (esta semana)</h6>
+                                    <h2 class="mb-0" id="proximas-vacuna">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-primary-subtle border-0">
+                                <div class="card-body">
+                                    <h6 class="text-primary">Pendientes</h6>
+                                    <h2 class="mb-0" id="pendientes-vacuna">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Vacunación -->
+                    <div class="table-responsive text-nowrap table-hover">
+                        <table class="table table-striped table-bordered" id="tabla-vacunacion">
+                            <thead>
+                                <tr>
+                                    <th>Animal</th>
+                                    <th>Vacuna</th>
+                                    <th>Fecha programada</th>
+                                    <th>Responsable</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-vacunacion">
+                                {% for registro in registros %}
+                                {% if registro.tipo_evento == 'vacunacion' %}
+                                <tr>
+                                    <td>#{{ registro.arete }}</td>
+                                    <td>{{ registro.nombre_item }}</td>
+                                    <td>{{ registro.fecha_programada }}</td>
+                                    <td>{{ registro.responsable }}</td>
+                                    <td>
+                                        {% if registro.estado == 'Vencida' %}
+                                        <span class="badge bg-danger">Vencida</span>
+                                        {% elif registro.estado == 'Próxima' %}
+                                        <span class="badge bg-warning">Próxima</span>
+                                        {% else %}
+                                        <span class="badge bg-primary">Pendiente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-dark btn-sm">
+                                            Registrar aplicación
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab de Tratamientos -->
+                <div class="tab-pane fade" id="tratamientos" role="tabpanel" aria-labelledby="tratamientos-tab">
+
+                    <!-- Cards de Estadísticas -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-danger-subtle border-0">
+                                <div class="card-body">
+                                    <h6 class="text-danger">Vencidas</h6>
+                                    <h2 class="mb-0" id="vencidas-tratamiento">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-warning-subtle border-0">
+                                <div class="card-body">
+                                    <h6 class="text-warning">Próximas (esta semana)</h6>
+                                    <h2 class="mb-0" id="proximas-tratamiento">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-primary-subtle border-0">
+                                <div class="card-body">
+                                    <h6 class="text-primary">Pendientes</h6>
+                                    <h2 class="mb-0" id="pendientes-tratamiento">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Tratamientos -->
+                    <div class="table-responsive text-nowrap table-hover">
+                        <table class="table table-striped table-bordered" id="tabla-tratamientos">
+                            <thead>
+                                <tr>
+                                    <th>Animal</th>
+                                    <th>Vacuna</th>
+                                    <th>Fecha programada</th>
+                                    <th>Responsable</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-tratamientos">
+                                {% for registro in registros %}
+                                {% if registro.tipo_evento == 'tratamiento' %}
+                                <tr>
+                                    <td>#{{ registro.arete }}</td>
+                                    <td>{{ registro.nombre_item }}</td>
+                                    <td>{{ registro.fecha_programada }}</td>
+                                    <td>{{ registro.responsable }}</td>
+                                    <td>
+                                        {% if registro.estado == 'Vencida' %}
+                                        <span class="badge bg-danger">Vencida</span>
+                                        {% elif registro.estado == 'Próxima' %}
+                                        <span class="badge bg-warning">Próxima</span>
+                                        {% else %}
+                                        <span class="badge bg-primary">Pendiente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-dark btn-sm">
+                                            Registrar aplicación
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Calcular estadísticas al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        calcularEstadisticas();
+    });
+
+    function calcularEstadisticas() {
+        // Vacunación
+        const filasVacunacion = document.querySelectorAll('#tbody-vacunacion tr');
+        let vencidasVacuna = 0, proximasVacuna = 0, pendientesVacuna = 0;
+
+        filasVacunacion.forEach(fila => {
+            const badge = fila.querySelector('.badge');
+            if (badge) {
+                if (badge.classList.contains('bg-danger')) vencidasVacuna++;
+                else if (badge.classList.contains('bg-warning')) proximasVacuna++;
+                else if (badge.classList.contains('bg-primary')) pendientesVacuna++;
+            }
+        });
+
+        document.getElementById('vencidas-vacuna').textContent = vencidasVacuna;
+        document.getElementById('proximas-vacuna').textContent = proximasVacuna;
+        document.getElementById('pendientes-vacuna').textContent = pendientesVacuna;
+
+        // Tratamientos
+        const filasTratamientos = document.querySelectorAll('#tbody-tratamientos tr');
+        let vencidasTratamiento = 0, proximasTratamiento = 0, pendientesTratamiento = 0;
+
+        filasTratamientos.forEach(fila => {
+            const badge = fila.querySelector('.badge');
+            if (badge) {
+                if (badge.classList.contains('bg-danger')) vencidasTratamiento++;
+                else if (badge.classList.contains('bg-warning')) proximasTratamiento++;
+                else if (badge.classList.contains('bg-primary')) pendientesTratamiento++;
+            }
+        });
+
+        document.getElementById('vencidas-tratamiento').textContent = vencidasTratamiento;
+        document.getElementById('proximas-tratamiento').textContent = proximasTratamiento;
+        document.getElementById('pendientes-tratamiento').textContent = pendientesTratamiento;
+    }
+</script>
+
+{% endblock %}
