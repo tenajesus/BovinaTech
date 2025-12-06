@@ -32,6 +32,15 @@ Agenda de Salud
                 <!-- Tab de Vacunación -->
                 <div class="tab-pane fade show active" id="vacunacion" role="tabpanel" aria-labelledby="vacunacion-tab">
 
+                    <!-- Botón para registrar esquema de vacunación -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Esquemas de Vacunación</h5>
+                        <button class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#modalEsquemaVacunacion">
+                            <i class="bi bi-plus-circle"></i> Registrar Esquema de Vacunación
+                        </button>
+                    </div>
+
                     <!-- Cards de Estadísticas -->
                     <div class="row mb-4">
                         <div class="col-md-4">
@@ -192,10 +201,120 @@ Agenda de Salud
     </div>
 </div>
 
+<!-- Modal para Registrar Esquema de Vacunación -->
+<div class="modal fade" id="modalEsquemaVacunacion" tabindex="-1" aria-labelledby="modalEsquemaVacunacionLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEsquemaVacunacionLabel">
+                    <i class="bi bi-shield-fill-plus"></i> Registrar Esquema de Vacunación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEsquemaVacunacion" method="POST" action="/registrar-esquema-vacunacion">
+                <div class="modal-body">
+                    <!-- Tipo de aplicación -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Aplicar a:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo_aplicacion" id="radioAnimal"
+                                value="animal" checked>
+                            <label class="form-check-label" for="radioAnimal">
+                                Animal individual (por arete)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo_aplicacion" id="radioLote"
+                                value="lote">
+                            <label class="form-check-label" for="radioLote">
+                                Lote completo
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Selección de Animal -->
+                    <div class="mb-3" id="divAnimal">
+                        <label for="selectAnimal" class="form-label">Animal (Arete)</label>
+                        <select class="form-select" id="selectAnimal" name="id_animal">
+                            <option value="">Seleccione un animal...</option>
+                            {% for animal in animales %}
+                            <option value="{{ animal.id_animal }}">{{ animal.arete }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Selección de Lote -->
+                    <div class="mb-3 d-none" id="divLote">
+                        <label for="selectLote" class="form-label">Lote</label>
+                        <select class="form-select" id="selectLote" name="id_lote">
+                            <option value="">Seleccione un lote...</option>
+                            {% for lote in lotes %}
+                            <option value="{{ lote.id_lote }}">{{ lote.nombre }} - {{ lote.corral }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Medicamento -->
+                    <div class="mb-3">
+                        <label for="selectMedicamento" class="form-label">Medicamento/Vacuna <span
+                                class="text-danger">*</span></label>
+                        <select class="form-select" id="selectMedicamento" name="id_item" required>
+                            <option value="">Seleccione un medicamento...</option>
+                            {% for medicamento in medicamentos %}
+                            <option value="{{ medicamento.id_item }}">{{ medicamento.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Dosis -->
+                    <div class="mb-3">
+                        <label for="inputDosis" class="form-label">Dosis (ml) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" class="form-control" id="inputDosis" name="dosis" required>
+                    </div>
+
+                    <!-- Responsable -->
+                    <div class="mb-3">
+                        <label for="inputResponsable" class="form-label">Responsable <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="inputResponsable" name="responsable" required>
+                    </div>
+
+                    <!-- Número de dosis -->
+                    <div class="mb-3">
+                        <label for="inputNumeroDosis" class="form-label">Número de aplicaciones <span
+                                class="text-danger">*</span></label>
+                        <input type="number" min="1" max="10" class="form-control" id="inputNumeroDosis"
+                            name="numero_dosis" value="1" required>
+                        <small class="text-muted">Especifique cuántas aplicaciones tendrá este esquema</small>
+                    </div>
+
+                    <!-- Contenedor de fechas (se generará dinámicamente) -->
+                    <div id="contenedorFechas">
+                        <div class="mb-3">
+                            <label for="fecha_1" class="form-label">Fecha de aplicación 1 <span
+                                    class="text-danger">*</span></label>
+                            <input type="date" class="form-control fecha-aplicacion" id="fecha_1" name="fechas[]"
+                                required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark">
+                        <i class="bi bi-save"></i> Registrar Esquema
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     // Calcular estadísticas al cargar la página
     document.addEventListener('DOMContentLoaded', function () {
         calcularEstadisticas();
+        inicializarModalEsquema();
     });
 
     function calcularEstadisticas() {
@@ -232,6 +351,71 @@ Agenda de Salud
         document.getElementById('vencidas-tratamiento').textContent = vencidasTratamiento;
         document.getElementById('proximas-tratamiento').textContent = proximasTratamiento;
         document.getElementById('pendientes-tratamiento').textContent = pendientesTratamiento;
+    }
+
+    function inicializarModalEsquema() {
+        const radioAnimal = document.getElementById('radioAnimal');
+        const radioLote = document.getElementById('radioLote');
+        const divAnimal = document.getElementById('divAnimal');
+        const divLote = document.getElementById('divLote');
+        const inputNumeroDosis = document.getElementById('inputNumeroDosis');
+        const contenedorFechas = document.getElementById('contenedorFechas');
+
+        // Manejar cambio entre animal y lote
+        radioAnimal.addEventListener('change', function () {
+            if (this.checked) {
+                divAnimal.classList.remove('d-none');
+                divLote.classList.add('d-none');
+                document.getElementById('selectAnimal').required = true;
+                document.getElementById('selectLote').required = false;
+            }
+        });
+
+        radioLote.addEventListener('change', function () {
+            if (this.checked) {
+                divLote.classList.remove('d-none');
+                divAnimal.classList.add('d-none');
+                document.getElementById('selectLote').required = true;
+                document.getElementById('selectAnimal').required = false;
+            }
+        });
+
+        // Generar campos de fecha dinámicamente
+        inputNumeroDosis.addEventListener('change', function () {
+            const numeroDosis = parseInt(this.value) || 1;
+            contenedorFechas.innerHTML = '';
+
+            for (let i = 1; i <= numeroDosis; i++) {
+                const divFecha = document.createElement('div');
+                divFecha.className = 'mb-3';
+                divFecha.innerHTML = `
+                    <label for="fecha_${i}" class="form-label">Fecha de aplicación ${i} <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control fecha-aplicacion" id="fecha_${i}" name="fechas[]" required>
+                `;
+                contenedorFechas.appendChild(divFecha);
+            }
+        });
+
+        // Validar formulario antes de enviar
+        document.getElementById('formEsquemaVacunacion').addEventListener('submit', function (e) {
+            const tipoAplicacion = document.querySelector('input[name="tipo_aplicacion"]:checked').value;
+
+            if (tipoAplicacion === 'animal') {
+                const selectAnimal = document.getElementById('selectAnimal');
+                if (!selectAnimal.value) {
+                    e.preventDefault();
+                    alert('Por favor seleccione un animal');
+                    return false;
+                }
+            } else {
+                const selectLote = document.getElementById('selectLote');
+                if (!selectLote.value) {
+                    e.preventDefault();
+                    alert('Por favor seleccione un lote');
+                    return false;
+                }
+            }
+        });
     }
 </script>
 

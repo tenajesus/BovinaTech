@@ -587,3 +587,107 @@ def sql_lista_registros_sanitarios():
     except Exception as e:
         print(f"Error en la función sql_lista_registros_sanitarios: {e}")
         return None
+
+
+# Obtener lista de animales
+def sql_lista_animales():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "SELECT id_animal, arete FROM animal ORDER BY arete"
+                cursor.execute(querySQL)
+                animales = cursor.fetchall()
+        return animales
+    except Exception as e:
+        print(f"Error en la función sql_lista_animales: {e}")
+        return []
+
+
+# Obtener lista de lotes
+def sql_lista_lotes():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "SELECT id_lote, nombre, corral FROM lote WHERE estado = 'Activo' ORDER BY nombre"
+                cursor.execute(querySQL)
+                lotes = cursor.fetchall()
+        return lotes
+    except Exception as e:
+        print(f"Error en la función sql_lista_lotes: {e}")
+        return []
+
+
+# Obtener lista de medicamentos
+def sql_lista_medicamentos():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "SELECT id_item, nombre FROM item WHERE tipo = 'medicamento' ORDER BY nombre"
+                cursor.execute(querySQL)
+                medicamentos = cursor.fetchall()
+        return medicamentos
+    except Exception as e:
+        print(f"Error en la función sql_lista_medicamentos: {e}")
+        return []
+
+
+# Obtener animales de un lote
+def sql_animales_por_lote(id_lote):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "SELECT id_animal, arete FROM animal WHERE id_lote = %s"
+                cursor.execute(querySQL, (id_lote,))
+                animales = cursor.fetchall()
+        return animales
+    except Exception as e:
+        print(f"Error en la función sql_animales_por_lote: {e}")
+        return []
+
+
+# Registrar esquema de vacunación
+def registrar_esquema_vacunacion(dataForm):
+    try:
+        tipo_aplicacion = dataForm.get('tipo_aplicacion')
+        id_item = dataForm.get('id_item')
+        dosis = dataForm.get('dosis')
+        responsable = dataForm.get('responsable')
+        fechas = dataForm.getlist('fechas[]')
+        
+        # Obtener lista de animales según el tipo de aplicación
+        animales = []
+        if tipo_aplicacion == 'animal':
+            id_animal = dataForm.get('id_animal')
+            if id_animal:
+                animales = [{'id_animal': id_animal}]
+        else:  # lote
+            id_lote = dataForm.get('id_lote')
+            if id_lote:
+                animales = sql_animales_por_lote(id_lote)
+        
+        if not animales:
+            return False
+        
+        # Registrar cada aplicación para cada animal
+        registros_insertados = 0
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                for animal in animales:
+                    for fecha in fechas:
+                        if fecha:  # Verificar que la fecha no esté vacía
+                            sql = """
+                                INSERT INTO registro_sanitario 
+                                (fecha, tipo_evento, responsable, dosis, id_item, id_animal) 
+                                VALUES (%s, %s, %s, %s, %s, %s)
+                            """
+                            valores = (fecha, 'Vacunación', responsable, dosis, id_item, animal['id_animal'])
+                            cursor.execute(sql, valores)
+                            registros_insertados += cursor.rowcount
+                
+                conexion_MySQLdb.commit()
+        
+        return registros_insertados > 0
+        
+    except Exception as e:
+        print(f"Error en registrar_esquema_vacunacion: {e}")
+        return False

@@ -249,7 +249,29 @@ def reporteBD():
 def salud_tratamientos():
     if 'conectado' in session:
         registros = sql_lista_registros_sanitarios()
-        return render_template('salud/agenda_salud.html', registros=registros)
+        animales = sql_lista_animales()
+        lotes = sql_lista_lotes()
+        medicamentos = sql_lista_medicamentos()
+        return render_template('salud/agenda_salud.html', 
+                             registros=registros, 
+                             animales=animales, 
+                             lotes=lotes, 
+                             medicamentos=medicamentos)
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Ruta para registrar esquema de vacunación
+@app.route('/registrar-esquema-vacunacion', methods=['POST'])
+def registrar_esquema():
+    if 'conectado' in session:
+        resultado = registrar_esquema_vacunacion(request.form)
+        if resultado:
+            flash('Esquema de vacunación registrado exitosamente.', 'success')
+        else:
+            flash('Error al registrar el esquema de vacunación.', 'error')
+        return redirect(url_for('salud_tratamientos'))
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
