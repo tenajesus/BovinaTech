@@ -1,0 +1,15 @@
+Field                     Type                 Null  Default
+------------------------------------------------------------
+id_item                   int(11)              NO    None
+nombre                    varchar(100)         NO    None
+tipo                      enum('medicamento','alimento','herramienta') NO    None
+costo                     decimal(10,2)        NO    None
+cantidad                  decimal(10,2)        YES   0.00
+minimo                    int(11)              NO    None
+dias_retiro_carne         int(11)              YES   0
+ingrediente_activo        varchar(100)         YES   None
+categoria_sanitaria       enum('NA','Vacuna','Desparasitante','Antibiotico','Vitamina') YES   NA
+requiere_refuerzo         tinyint(1)           NO    None
+dias_refuerzo             tinyint(1)           NO    None
+unidad_medida             enum('ml','dosis','gramos','unidad') YES   unidad
+dias_retiro_leche         int(11)              YES   0

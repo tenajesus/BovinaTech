@@ -1,0 +1,268 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block title %}Gestión de Inventario{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- Header con estadísticas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bx bx-package"></i> Gestión de Inventario</h2>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalItem">
+                    <i class="bx bx-plus"></i> Registrar Nuevo Elemento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Elementos</h5>
+                    <h2>{{ stats.total_items or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Medicamentos</h5>
+                    <h2>{{ stats.total_medicamentos or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Alimentos</h5>
+                    <h2>{{ stats.total_alimentos or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Stock Bajo</h5>
+                    <h2>{{ stats.items_stock_bajo or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bx bx-search"></i></span>
+                <input type="text" class="form-control" id="buscadorElementos"
+                    placeholder="Buscar elemento por nombre..." onkeyup="filtrarTabla()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs de Navegación -->
+    <ul class="nav nav-tabs mb-3" id="inventarioTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if not tipo_filtro %}active{% endif %}" href="{{ url_for('inventario') }}">
+                Todos
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if tipo_filtro == 'medicamento' %}active{% endif %}"
+                href="{{ url_for('inventario', tipo='medicamento') }}">
+                Medicamentos
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if tipo_filtro == 'alimento' %}active{% endif %}"
+                href="{{ url_for('inventario', tipo='alimento') }}">
+                Alimentos
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if tipo_filtro == 'herramienta' %}active{% endif %}"
+                href="{{ url_for('inventario', tipo='herramienta') }}">
+                Herramientas
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tabla de Items -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaItems">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            {% if tipo_filtro == 'medicamento' or not tipo_filtro %}
+                            <th>Ingrediente Activo</th>
+                            <th>Categoría</th>
+                            {% endif %}
+                            <th>Stock</th>
+                            <th>Unidad</th>
+                            <th>Costo</th>
+                            <th>Valor Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr
+                            class="{% if item.nivel_stock == 'bajo' %}table-danger{% elif item.nivel_stock == 'medio' %}table-warning{% endif %}">
+                            <td>
+                                {{ item.nombre }}
+                                {% if item.nivel_stock == 'bajo' %}
+                                <span class="badge bg-danger">Stock Bajo</span>
+                                {% endif %}
+                            </td>
+                            {% if tipo_filtro == 'medicamento' or not tipo_filtro %}
+                            <td>{{ item.ingrediente_activo or '-' }}</td>
+                            <td>{{ item.categoria_sanitaria or '-' }}</td>
+                            {% endif %}
+                            <td><strong>{{ item.cantidad }}</strong></td>
+                            <td>{{ item.unidad_medida }}</td>
+                            <td>${{ "%.2f"|format(item.costo) }}</td>
+                            <td>${{ "%.2f"|format(item.costo * item.cantidad) }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary"
+                                    onclick="registrarEntrada({{ item.id_item }}, '{{ item.tipo }}', '{{ item.nombre }}')"
+                                    title="Registrar Entrada">
+                                    <i class="bx bx-plus-circle"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success"
+                                    onclick="registrarSalida({{ item.id_item }}, '{{ item.tipo }}', '{{ item.nombre }}')"
+                                    title="Registrar Salida">
+                                    <i class="bx bx-arrow-from-bottom"></i>
+                                </button>
+                                <button class="btn btn-sm btn-info" onclick="editarItem({{ item.id_item }})">
+                                    <i class="bx bx-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger"
+                                    onclick="eliminarItem({{ item.id_item }}, '{{ item.nombre }}')">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No hay elementos registrados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Registro/Edición -->
+{% include 'inventario/modal_item.html' %}
+
+<!-- Modal para Registrar Entrada -->
+{% include 'inventario/modal_entrada.html' %}
+
+<!-- Modal para Registrar Salida -->
+{% include 'inventario/modal_salida.html' %}
+
+<script>
+    // Función para filtrar la tabla en tiempo real
+    function filtrarTabla() {
+        const input = document.getElementById('buscadorElementos');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('tablaItems');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        let visibleCount = 0;
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const nombre = row.getElementsByTagName('td')[0];
+
+            if (nombre) {
+                const txtValue = nombre.textContent || nombre.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Si no hay resultados visibles, mostrar mensaje
+        const emptyRow = table.querySelector('tbody tr td[colspan]');
+        if (emptyRow && visibleCount === 0 && filter !== '') {
+            emptyRow.parentElement.style.display = '';
+            emptyRow.textContent = `No se encontraron elementos que coincidan con "${input.value}"`;
+        }
+    }
+
+    // Función para editar elemento
+    async function editarItem(id) {
+        try {
+            const response = await fetch(`/api/inventario/${id}`);
+            const item = await response.json();
+
+            // Llenar formulario con datos del item
+            document.getElementById('id_item').value = item.id_item;
+            document.getElementById('nombre').value = item.nombre;
+            document.getElementById('tipo').value = item.tipo;
+            document.getElementById('costo').value = item.costo;
+            document.getElementById('cantidad').value = item.cantidad;
+            document.getElementById('minimo').value = item.minimo || 10;
+            document.getElementById('unidad_medida').value = item.unidad_medida;
+
+            // Campos de medicamento
+            if (item.ingrediente_activo) {
+                document.getElementById('ingrediente_activo').value = item.ingrediente_activo;
+            }
+            if (item.categoria_sanitaria) {
+                document.getElementById('categoria_sanitaria').value = item.categoria_sanitaria;
+            }
+            document.getElementById('dias_retiro_carne').value = item.dias_retiro_carne || 0;
+            document.getElementById('dias_retiro_leche').value = item.dias_retiro_leche || 0;
+            document.getElementById('requiere_refuerzo').checked = item.requiere_refuerzo;
+            if (item.dias_refuerzo) {
+                document.getElementById('dias_refuerzo').value = item.dias_refuerzo;
+            }
+
+            // Cambiar título y acción del formulario
+            document.getElementById('modalItemLabel').textContent = 'Editar Elemento';
+            document.getElementById('formItem').action = `/inventario/actualizar/${id}`;
+
+            // Mostrar/ocultar campos según tipo
+            toggleCamposMedicamento();
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalItem'));
+            modal.show();
+        } catch (error) {
+            console.error('Error al cargar elemento:', error);
+            alert('Error al cargar los datos del elemento');
+        }
+    }
+
+    // Función para eliminar item
+    function eliminarItem(id, nombre) {
+        if (confirm(`¿Estás seguro de eliminar el item "${nombre}"?`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/inventario/eliminar/${id}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Limpiar formulario al cerrar modal
+    document.getElementById('modalItem').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('formItem').reset();
+        document.getElementById('id_item').value = '';
+        document.getElementById('modalItemLabel').textContent = 'Registrar Nuevo Elemento';
+        document.getElementById('formItem').action = '/inventario/registrar';
+    });
+</script>
+{% endblock %}

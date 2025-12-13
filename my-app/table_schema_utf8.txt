@@ -1,0 +1,20 @@
+Checking Feeding Module tables...
+Table 'formula' exists.
+  id_formula (int(11))
+  nombre (varchar(100))
+  descripcion (text)
+  costo_estimado (decimal(10,2))
+  fecha_creacion (timestamp)
+Table 'ingrediente_formula' exists.
+  id (int(11))
+  id_formula (int(11))
+  id_item (int(11))
+  porcentaje (decimal(5,2))
+Table 'registro_alimento' exists.
+  id_registro (int(11))
+  fecha (datetime)
+  racion_asignada (decimal(10,2))
+  racion_consumida (decimal(10,2))
+  comentarios (text)
+  id_animal (int(11))
+  id_formula_alimento (int(11))

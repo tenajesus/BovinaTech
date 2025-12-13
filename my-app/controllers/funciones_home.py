@@ -17,6 +17,9 @@ import openpyxl  # Para generar el excel
 # biblioteca o modulo send_file para forzar la descarga
 from flask import send_file
 
+# Importar servicio de vacunación
+from services.vacunacion_service import VacunacionService
+
 
 def procesar_form_empleado(dataForm, foto_perfil):
     # Formateando Salario
@@ -569,7 +572,7 @@ def sql_lista_registros_sanitarios():
                         a.arete,
                         i.nombre AS nombre_item,
                         i.ingrediente_activo,
-                        i.dias_retiro,
+                        i.dias_retiro_carne,
                         DATE_FORMAT(rs.fecha, '%d/%m/%Y') AS fecha_programada,
                         CASE
                             WHEN rs.fecha < CURDATE() THEN 'Vencida'
@@ -586,7 +589,7 @@ def sql_lista_registros_sanitarios():
         return registrosBD
     except Exception as e:
         print(f"Error en la función sql_lista_registros_sanitarios: {e}")
-        return None
+        return []  # Retornar lista vacía en lugar de None
 
 
 # Obtener lista de animales
@@ -645,12 +648,16 @@ def sql_animales_por_lote(id_lote):
         return []
 
 
-# Registrar esquema de vacunación
+# Registrar esquema de vacunación (ACTUALIZADO para usar VacunacionService)
 def registrar_esquema_vacunacion(dataForm):
+    """
+    Registra un esquema de vacunación usando el servicio de vacunación.
+    Ahora calcula automáticamente los refuerzos según el tipo de vacuna.
+    """
     try:
         tipo_aplicacion = dataForm.get('tipo_aplicacion')
-        id_item = dataForm.get('id_item')
-        dosis = dataForm.get('dosis')
+        id_item = int(dataForm.get('id_item'))
+        dosis = float(dataForm.get('dosis'))
         responsable = dataForm.get('responsable')
         fechas = dataForm.getlist('fechas[]')
         
@@ -659,7 +666,7 @@ def registrar_esquema_vacunacion(dataForm):
         if tipo_aplicacion == 'animal':
             id_animal = dataForm.get('id_animal')
             if id_animal:
-                animales = [{'id_animal': id_animal}]
+                animales = [{'id_animal': int(id_animal)}]
         else:  # lote
             id_lote = dataForm.get('id_lote')
             if id_lote:
@@ -668,26 +675,65 @@ def registrar_esquema_vacunacion(dataForm):
         if not animales:
             return False
         
-        # Registrar cada aplicación para cada animal
-        registros_insertados = 0
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                for animal in animales:
-                    for fecha in fechas:
-                        if fecha:  # Verificar que la fecha no esté vacía
-                            sql = """
-                                INSERT INTO registro_sanitario 
-                                (fecha, tipo_evento, responsable, dosis, id_item, id_animal) 
-                                VALUES (%s, %s, %s, %s, %s, %s)
-                            """
-                            valores = (fecha, 'Vacunación', responsable, dosis, id_item, animal['id_animal'])
-                            cursor.execute(sql, valores)
-                            registros_insertados += cursor.rowcount
-                
-                conexion_MySQLdb.commit()
+        # Registrar cada aplicación para cada animal usando el servicio
+        # El servicio calcula automáticamente los refuerzos
+        registros_exitosos = 0
         
-        return registros_insertados > 0
+        for animal in animales:
+            for fecha_str in fechas:
+                if fecha_str:  # Verificar que la fecha no esté vacía
+                    # Convertir string de fecha a objeto date
+                    fecha_aplicacion = datetime.datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                    
+                    # Usar el servicio para registrar con cálculo automático de refuerzo
+                    resultado = VacunacionService.registrar_vacunacion(
+                        id_animal=animal['id_animal'],
+                        id_item=id_item,
+                        dosis=dosis,
+                        responsable=responsable,
+                        fecha_aplicacion=fecha_aplicacion,
+                        tipo_evento='Vacunación'
+                    )
+                    
+                    if resultado:
+                        registros_exitosos += 1
+        
+        return registros_exitosos > 0
         
     except Exception as e:
         print(f"Error en registrar_esquema_vacunacion: {e}")
         return False
+
+
+# Obtener alertas sanitarias automáticas para un animal
+def sql_obtener_alertas_animal(id_animal):
+    """
+    Obtiene las alertas sanitarias calculadas automáticamente para un animal.
+    Usa el servicio de vacunación para aplicar reglas veterinarias.
+    """
+    try:
+        alertas = VacunacionService.calcular_proximo_evento_sanitario(id_animal)
+        return alertas
+    except Exception as e:
+        print(f"Error al obtener alertas para animal {id_animal}: {e}")
+        return []
+
+
+# Obtener resumen de alertas para el dashboard
+def sql_obtener_resumen_alertas():
+    """
+    Obtiene un resumen de todas las alertas sanitarias para el dashboard.
+    """
+    try:
+        resumen = VacunacionService.obtener_alertas_dashboard()
+        return resumen
+    except Exception as e:
+        print(f"Error al obtener resumen de alertas: {e}")
+        return {
+            'total_alertas': 0,
+            'alta_urgencia': 0,
+            'media_urgencia': 0,
+            'baja_urgencia': 0,
+            'alertas_por_animal': []
+        }
+

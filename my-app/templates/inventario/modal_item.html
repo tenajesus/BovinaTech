@@ -1,0 +1,181 @@
+<!-- Modal para Registro/Edición de Item -->
+<div class="modal fade" id="modalItem" tabindex="-1" aria-labelledby="modalItemLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalItemLabel">Registrar Nuevo Elemento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formItem" method="POST" action="{{ url_for('registrar_item') }}">
+                <div class="modal-body">
+                    <input type="hidden" id="id_item" name="id_item">
+
+                    <!-- Campos Básicos (Siempre Visibles) -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre del Elemento *</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tipo" class="form-label">Tipo *</label>
+                                <select class="form-select" id="tipo" name="tipo" required
+                                    onchange="toggleCamposMedicamento()">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="medicamento">Medicamento</option>
+                                    <option value="alimento">Alimento</option>
+                                    <option value="herramienta">Herramienta</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="cantidad" class="form-label">Cantidad Inicial</label>
+                                <input type="number" step="0.01" class="form-control" id="cantidad" name="cantidad"
+                                    value="0">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="minimo" class="form-label">Stock Mínimo</label>
+                                <input type="number" class="form-control" id="minimo" name="minimo" value="10" required>
+                                <small class="text-muted">Alerta de stock bajo</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="unidad_medida" class="form-label">Unidad de Medida</label>
+                                <select class="form-select" id="unidad_medida" name="unidad_medida">
+                                    <option value="unidad">Unidad</option>
+                                    <option value="ml">Mililitros (ml)</option>
+                                    <option value="kg">Kilogramos (kg)</option>
+                                    <option value="litros">Litros</option>
+                                    <option value="dosis">Dosis</option>
+                                    <option value="gramos">Gramos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="costo" class="form-label">Costo Unitario *</label>
+                                <input type="number" step="0.01" class="form-control" id="costo" name="costo" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos Específicos de Medicamentos (Dinámicos) -->
+                    <div id="camposMedicamento" style="display: none;">
+                        <hr>
+                        <h6 class="text-primary">Información Sanitaria</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ingrediente_activo" class="form-label">Ingrediente Activo</label>
+                                    <input type="text" class="form-control" id="ingrediente_activo"
+                                        name="ingrediente_activo">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="categoria_sanitaria" class="form-label">Categoría Sanitaria</label>
+                                    <select class="form-select" id="categoria_sanitaria" name="categoria_sanitaria">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Vacuna">Vacuna</option>
+                                        <option value="Desparasitante">Desparasitante</option>
+                                        <option value="Antibiotico">Antibiótico</option>
+                                        <option value="Vitamina">Vitamina</option>
+                                        <option value="Antiinflamatorio">Antiinflamatorio</option>
+                                        <option value="NA">No Aplica</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="dias_retiro_carne" class="form-label">Días de Retiro (Carne)</label>
+                                    <input type="number" class="form-control" id="dias_retiro_carne"
+                                        name="dias_retiro_carne" value="0">
+                                    <small class="text-muted">Días antes de poder vender el animal</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="dias_retiro_leche" class="form-label">Días de Retiro (Leche)</label>
+                                    <input type="number" class="form-control" id="dias_retiro_leche"
+                                        name="dias_retiro_leche" value="0">
+                                    <small class="text-muted">Días antes de poder consumir la leche</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="requiere_refuerzo"
+                                        name="requiere_refuerzo" onchange="toggleDiasRefuerzo()">
+                                    <label class="form-check-label" for="requiere_refuerzo">
+                                        Requiere Refuerzo
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3" id="divDiasRefuerzo" style="display: none;">
+                                    <label for="dias_refuerzo" class="form-label">Días hasta Refuerzo</label>
+                                    <input type="number" class="form-control" id="dias_refuerzo" name="dias_refuerzo">
+                                    <small class="text-muted">Ej: 21 días, 365 días</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Elemento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para mostrar/ocultar campos de medicamento
+    function toggleCamposMedicamento() {
+        const tipo = document.getElementById('tipo').value;
+        const camposMedicamento = document.getElementById('camposMedicamento');
+
+        if (tipo === 'medicamento') {
+            camposMedicamento.style.display = 'block';
+        } else {
+            camposMedicamento.style.display = 'none';
+            // Limpiar campos de medicamento
+            document.getElementById('ingrediente_activo').value = '';
+            document.getElementById('categoria_sanitaria').value = '';
+            document.getElementById('dias_retiro_carne').value = '0';
+            document.getElementById('dias_retiro_leche').value = '0';
+            document.getElementById('requiere_refuerzo').checked = false;
+            document.getElementById('dias_refuerzo').value = '';
+            toggleDiasRefuerzo();
+        }
+    }
+
+    // Función para mostrar/ocultar campo de días de refuerzo
+    function toggleDiasRefuerzo() {
+        const requiereRefuerzo = document.getElementById('requiere_refuerzo').checked;
+        const divDiasRefuerzo = document.getElementById('divDiasRefuerzo');
+
+        if (requiereRefuerzo) {
+            divDiasRefuerzo.style.display = 'block';
+        } else {
+            divDiasRefuerzo.style.display = 'none';
+            document.getElementById('dias_refuerzo').value = '';
+        }
+    }
+</script>

@@ -5,6 +5,9 @@ from app import app
 from routers.router_login import *
 from routers.router_home import *
 from routers.router_page_not_found import *
+from routers.router_alimentacion import alimentacion
+
+app.register_blueprint(alimentacion)
 
 
 # Ejecutando el objeto Flask

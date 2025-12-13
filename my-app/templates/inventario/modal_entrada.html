@@ -1,0 +1,148 @@
+<!-- Modal para Registrar Entrada de Elemento -->
+<div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalEntradaLabel">
+                    <i class="bx bx-plus-circle"></i> Registrar Entrada de Stock
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <form id="formEntrada" method="POST" action="/inventario/registrar-entrada">
+                <div class="modal-body">
+                    <input type="hidden" id="entrada_id_item" name="id_item">
+                    <input type="hidden" id="entrada_tipo" name="tipo_elemento">
+
+                    <!-- Información del Elemento -->
+                    <div class="alert alert-primary">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Elemento:</strong> <span id="entrada_nombre_elemento"></span><br>
+                                <strong>Tipo:</strong> <span id="entrada_tipo_elemento"></span>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <strong>Stock Actual:</strong> <span id="entrada_stock_actual"
+                                    class="badge bg-white text-primary"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="entrada_cantidad" class="form-label">Cantidad a Ingresar *</label>
+                                <input type="number" step="0.01" class="form-control fw-bold" id="entrada_cantidad"
+                                    name="cantidad" required min="0.01">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="entrada_fecha" class="form-label">Fecha de Entrada *</label>
+                                <input type="date" class="form-control" id="entrada_fecha" name="fecha" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="entrada_costo" class="form-label">Costo Unitario (Nuevo) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" class="form-control" id="entrada_costo"
+                                        name="costo" required>
+                                </div>
+                                <small class="text-muted">Se actualizará el costo en el sistema.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="entrada_proveedor" class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" id="entrada_proveedor" name="proveedor"
+                                    placeholder="Nombre del proveedor">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos Específicos para Lote y Vencimiento (Solo Medicamentos) -->
+                    <div id="camposLoteVencimiento" style="display: none;" class="bg-light p-3 rounded mb-3 border">
+                        <h6 class="text-primary mb-3"><i class="bx bx-barcode"></i> Trazabilidad</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="entrada_lote" class="form-label">Número de Lote</label>
+                                    <input type="text" class="form-control" id="entrada_lote" name="lote"
+                                        placeholder="Ej: L-2023-001">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="entrada_vencimiento" class="form-label">Fecha de Vencimiento</label>
+                                    <input type="date" class="form-control" id="entrada_vencimiento"
+                                        name="fecha_vencimiento">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="entrada_observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="entrada_observaciones" name="observaciones" rows="2"
+                            placeholder="Detalles de la compra, factura, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-save"></i> Registrar Entrada
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function registrarEntrada(id_item, tipo, nombre) {
+        try {
+            // Obtener datos actuales
+            const response = await fetch(`/api/inventario/${id_item}`);
+            const item = await response.json();
+
+            // Llenar campos
+            document.getElementById('entrada_id_item').value = id_item;
+            document.getElementById('entrada_tipo').value = tipo;
+            document.getElementById('entrada_nombre_elemento').textContent = nombre;
+            document.getElementById('entrada_tipo_elemento').textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+            document.getElementById('entrada_stock_actual').textContent = `${item.cantidad} ${item.unidad_medida}`;
+            document.getElementById('entrada_costo').value = item.costo; // Pre-llenar con costo actual
+
+            // Fecha de hoy
+            document.getElementById('entrada_fecha').value = new Date().toISOString().split('T')[0];
+
+            // Mostrar campos de lote/vencimiento solo para medicamentos
+            const divLote = document.getElementById('camposLoteVencimiento');
+            if (tipo === 'medicamento') {
+                divLote.style.display = 'block';
+                document.getElementById('entrada_lote').required = true;
+                document.getElementById('entrada_vencimiento').required = false; // Opcional, pero recomendado
+            } else {
+                divLote.style.display = 'none';
+                document.getElementById('entrada_lote').required = false;
+            }
+
+            // Resetear otros campos
+            document.getElementById('entrada_cantidad').value = '';
+            document.getElementById('entrada_proveedor').value = '';
+            document.getElementById('entrada_lote').value = '';
+            document.getElementById('entrada_vencimiento').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('modalEntrada'));
+            modal.show();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cargar datos del elemento');
+        }
+    }
+</script>

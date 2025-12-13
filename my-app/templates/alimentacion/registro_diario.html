@@ -1,0 +1,122 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block body %}
+<h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Alimentación /</span> Registro Diario
+</h4>
+
+{% include 'alimentacion/nav_alimentacion.html' %}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Registro Diario de Alimentación</h5>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('alimentacion.registro_diario') }}" method="POST" id="formRegistro">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" class="form-control" name="fecha" id="fecha" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Lote</label>
+                    <select class="form-select" name="id_lote" id="id_lote" onchange="cargarAnimales()" required>
+                        <option value="">Seleccionar Lote...</option>
+                        {% for lote in lotes %}
+                        <option value="{{ lote.id_lote }}">{{ lote.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Tipo de Alimento (Fórmula)</label>
+                    <select class="form-select" name="id_formula" required>
+                        <option value="">Seleccionar Fórmula...</option>
+                        {% for formula in formulas %}
+                        <option value="{{ formula.id_formula }}">{{ formula.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Animal</th>
+                            <th width="20%">Ración Asignada (kg)</th>
+                            <th width="20%">Ración Consumida (kg)</th>
+                            <th>Comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAnimales">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Seleccione un lote para cargar los animales.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save"></i> Guardar Registro
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script>
+    // Establecer fecha de hoy por defecto
+    document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+
+    async function cargarAnimales() {
+        const idLote = document.getElementById('id_lote').value;
+        const tbody = document.getElementById('tablaAnimales');
+
+        if (!idLote) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Seleccione un lote para cargar los animales.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></td></tr>';
+
+        try {
+            const response = await fetch(`/api/lotes/${idLote}/animales`);
+            const animales = await response.json();
+
+            tbody.innerHTML = '';
+
+            if (animales.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-warning">Este lote no tiene animales registrados.</td></tr>';
+                return;
+            }
+
+            animales.forEach(animal => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <strong>${animal.nombre}</strong>
+                        <input type="hidden" name="id_animal[]" value="${animal.id_animal}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" class="form-control" name="racion_asignada[]" placeholder="0.0" required>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" class="form-control" name="racion_consumida[]" placeholder="0.0" required>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="comentarios[]" placeholder="Observaciones...">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error al cargar animales.</td></tr>';
+        }
+    }
+</script>
+{% endblock %}

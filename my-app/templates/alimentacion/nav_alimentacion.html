@@ -1,0 +1,19 @@
+<ul class="nav nav-pills flex-column flex-md-row mb-3">
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'alimentacion.registro_diario' %}active{% endif %}"
+            href="{{ url_for('alimentacion.registro_diario') }}">
+            <i class="bx bx-calendar-edit me-1"></i> Registro Diario
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'alimentacion.formulas' %}active{% endif %}"
+            href="{{ url_for('alimentacion.formulas') }}">
+            <i class="bx bx-food-menu me-1"></i> Fórmulas
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('inventario', tipo='alimento') }}">
+            <i class="bx bx-package me-1"></i> Inventario
+        </a>
+    </li>
+</ul>

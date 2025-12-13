@@ -21,6 +21,18 @@
         <div data-i18n="Basic">Salud y Tratamientos</div>
       </a>
     </li>
+    <li class="menu-item {% if 'alimentacion' in request.path %} active {% endif %}">
+      <a href="{{ url_for('alimentacion.registro_diario') }}" class="menu-link">
+        <i class="menu-icon bx bx-bowl-rice"></i>
+        <div data-i18n="Alimentacion">Alimentación</div>
+      </a>
+    </li>
+    <li class="menu-item {% if request.path == '/inventario' %} active {% endif %}">
+      <a href="{{ url_for('inventario') }}" class="menu-link">
+        <i class="menu-icon bx bx-package"></i>
+        <div data-i18n="Inventario">Inventario</div>
+      </a>
+    </li>
     <li class="menu-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
       <a href="/lista-de-usuarios" class="menu-link">
         <i class="menu-icon bi bi-person-lines-fill"></i>
